@@ -63,9 +63,29 @@ namespace Stocklite1.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap stocklite {
+            get {
+                object obj = ResourceManager.GetObject("stocklite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap StockLite_logo_adjusted {
             get {
                 object obj = ResourceManager.GetObject("StockLite_logo_adjusted", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Stocklite_white {
+            get {
+                object obj = ResourceManager.GetObject("Stocklite_white", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

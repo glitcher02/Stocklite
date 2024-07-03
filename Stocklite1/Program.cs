@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Stocklite1
 {
-    internal static class Program
+    static class Program
     {
         /// <summary>
         /// The main entry point for the application.
@@ -16,6 +16,18 @@ namespace Stocklite1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            
+            Stocklite1.LoadingPage loadingForm = new Stocklite1.LoadingPage();
+            loadingForm.Show();
+
+            
+            System.Threading.Tasks.Task.Delay(3000).Wait(); // 3 seconds
+
+            
+            loadingForm.Close();
+
+            
             Application.Run(new Form1());
         }
     }
