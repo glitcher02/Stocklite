@@ -105,6 +105,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\appledata.json" />
     <None Include="Resources\StockLite_logo_adjusted.png" />
   </ItemGroup>
   <ItemGroup>
