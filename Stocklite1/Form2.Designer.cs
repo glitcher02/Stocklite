@@ -33,7 +33,13 @@
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.button1 = new System.Windows.Forms.Button();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.Sell_button = new System.Windows.Forms.Button();
+            this.Buy_button = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -49,7 +55,7 @@
             this.chart1.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.chart1.Legends.Add(legend1);
-            this.chart1.Location = new System.Drawing.Point(197, 117);
+            this.chart1.Location = new System.Drawing.Point(33, 31);
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Candlestick;
@@ -57,23 +63,84 @@
             series1.Name = "Series1";
             series1.YValuesPerPoint = 4;
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(1482, 801);
+            this.chart1.Size = new System.Drawing.Size(1236, 663);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(1085, 133);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(147, 39);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Start/Pause";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // trackBar1
+            // 
+            this.trackBar1.Location = new System.Drawing.Point(1073, 192);
+            this.trackBar1.Maximum = 1000;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(182, 90);
+            this.trackBar1.TabIndex = 2;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
+            // 
+            // Sell_button
+            // 
+            this.Sell_button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.Sell_button.Location = new System.Drawing.Point(1085, 398);
+            this.Sell_button.Name = "Sell_button";
+            this.Sell_button.Size = new System.Drawing.Size(156, 55);
+            this.Sell_button.TabIndex = 4;
+            this.Sell_button.Text = "SELL";
+            this.Sell_button.UseVisualStyleBackColor = false;
+            this.Sell_button.Click += new System.EventHandler(this.Sell_button_Click);
+            // 
+            // Buy_button
+            // 
+            this.Buy_button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.Buy_button.Location = new System.Drawing.Point(1085, 337);
+            this.Buy_button.Name = "Buy_button";
+            this.Buy_button.Size = new System.Drawing.Size(156, 55);
+            this.Buy_button.TabIndex = 5;
+            this.Buy_button.Text = "BUY";
+            this.Buy_button.UseVisualStyleBackColor = false;
+            this.Buy_button.Click += new System.EventHandler(this.Buy_button_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(1298, 57);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 31);
+            this.textBox1.TabIndex = 6;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // Form2
             // 
             this.ClientSize = new System.Drawing.Size(2363, 1503);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.Buy_button);
+            this.Controls.Add(this.Sell_button);
+            this.Controls.Add(this.trackBar1);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.chart1);
             this.Name = "Form2";
             this.Load += new System.EventHandler(this.Form2_Load);
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.Button Sell_button;
+        private System.Windows.Forms.Button Buy_button;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }

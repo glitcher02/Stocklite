@@ -21,6 +21,11 @@ namespace Stocklite1
     /// </summary>
     public partial class Form2 : Form
     {
+        private HorizontalLineAnnotation currentPriceLine;
+        private bool hasActiveBuy = false; // To track if there's an active buy
+        private double buyPrice; // Stores the price at which the user bought
+        private HorizontalLineAnnotation buyLine; // Annotation for the buy line
+        private double leverage = 500;
         private List<StockData> stockDataList;
         private int currentIndex = 0;
         private Timer updateTimer;
@@ -32,6 +37,25 @@ namespace Stocklite1
             InitializeComponent();
             LoadChartData();
 
+            updateTimer = new Timer();
+            updateTimer.Interval = 200; // 2 seconds
+            updateTimer.Tick += UpdateChart;
+            updateTimer.Start();
+
+            currentPriceLine = new HorizontalLineAnnotation
+            {
+                AxisX = chart1.ChartAreas[0].AxisX,
+                AxisY = chart1.ChartAreas[0].AxisY,
+                IsInfinitive = true,
+                LineColor = Color.Red,
+                LineWidth = 2,
+                Y = 0 // This will be updated with the latest price
+            };
+            chart1.Annotations.Add(currentPriceLine);
+
+
+
+
             chart1.Click += new EventHandler(chart1_Click);
         }
 
@@ -40,8 +64,7 @@ namespace Stocklite1
         /// </summary>
         private void chart1_Click(object sender, EventArgs e)
         {
-            ///chart1.ChartAreas[0].AxisX.ScaleView.ZoomReset();
-            ///chart1.ChartAreas[0].AxisY.ScaleView.ZoomReset();
+          
         }
 
         /// <summary>
@@ -66,64 +89,10 @@ namespace Stocklite1
             string jsonData = File.ReadAllText(jsonFilePath);
 
             RootObject rootObject = JsonConvert.DeserializeObject<RootObject>(jsonData);
-            List<StockData> stockDataList = rootObject.results;
+            stockDataList = rootObject.results;
 
-            chart1.Series.Clear();
-            Series series = new Series("EUR/USD");
-            series.ChartType = SeriesChartType.Candlestick;
-
-            series["OpenCloseStyle"] = "Triangle"; //type of opening and closing price
-            series["ShowOpenClose"] = "Both"; //shows open and close price
-            series["PointWidth"] = "0.5"; //width of candle
-            series["PriceUpColor"] = "Green"; // Color for price increase
-            series["PriceDownColor"] = "Red"; // Color for price decrease
-
-            double minY = double.MaxValue;
-            double maxY = double.MinValue;
-
-            foreach (var data in stockDataList)
-            {
-                DateTime dateTime = DateTimeOffset.FromUnixTimeMilliseconds(data.t).DateTime;
-
-                DataPoint dataPoint = new DataPoint();
-                dataPoint.XValue = dateTime.ToOADate();
-                dataPoint.YValues = new double[] { (double)data.h, (double)data.l, (double)data.o, (double)data.c };
-                series.Points.Add(dataPoint);
-
-                minY = Math.Min(minY, (double)data.l);
-                maxY = Math.Max(maxY, (double)data.h);
-            }
-
-            chart1.Series.Add(series);
-
-            chart1.ChartAreas[0].AxisY.Minimum = minY - (maxY - minY) * 0.1;
-            chart1.ChartAreas[0].AxisY.Maximum = maxY + (maxY - minY) * 0.1;
-
-            //Preseting correct time
-            chart1.ChartAreas[0].AxisX.LabelStyle.Format = "yyyy-MM-dd"; // Display dates in a readable format
-            chart1.ChartAreas[0].AxisX.IntervalType = DateTimeIntervalType.Days; // Use days as the interval type
-            chart1.ChartAreas[0].AxisX.Interval = 2; // Set interval to 1 day to make it more readable
-                                                     //chart1.ChartAreas[0].AxisX.IntervalAutoMode = IntervalAutoMode.VariableCount;
-
-            //Time Customisation
-            chart1.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.LightGray;
-            chart1.ChartAreas[0].AxisX.MajorGrid.LineDashStyle = ChartDashStyle.Dash;
-            chart1.ChartAreas[0].AxisX.LabelStyle.Angle = -45;
-            //Scale
-            chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
-
-            chart1.ChartAreas[0].AxisX.ScaleView.Size = 30;
-            
-
-            chart1.ChartAreas[0].AxisX.ScaleView.MinSize = 1;
-            chart1.ChartAreas[0].AxisX.ScaleView.SmallScrollSize = 5;
-
-            chart1.ChartAreas[0].AxisX.ScrollBar.IsPositionedInside = true;
-            chart1.ChartAreas[0].AxisX.ScrollBar.Size = 15;
-            chart1.ChartAreas[0].AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
-            chart1.ChartAreas[0].AxisX.ScrollBar.BackColor = Color.Black;
-
-            chart1.Invalidate();
+            InitializeChart();
+           
         }
 
         /// <summary>
@@ -192,11 +161,166 @@ namespace Stocklite1
         {
             // Your initialization code for the form goes here
         }
+        private void InitializeChart()
+        {
+            chart1.Series.Clear();
+            Series series = new Series("EUR/USD");
+            series.ChartType = SeriesChartType.Candlestick;
+            series["OpenCloseStyle"] = "Triangle";
+            series["ShowOpenClose"] = "Both";
+            series["PointWidth"] = "0.5";
+            series["PriceUpColor"] = "Green";
+            series["PriceDownColor"] = "Red";
+
+            chart1.Series.Add(series);
+
+            chart1.ChartAreas[0].AxisX.LabelStyle.Format = "yyyy-MM-dd";
+            chart1.ChartAreas[0].AxisX.IntervalType = DateTimeIntervalType.Days;
+            chart1.ChartAreas[0].AxisX.LabelStyle.Angle = -45;
+            chart1.ChartAreas[0].AxisX.ScaleView.Zoomable = true;
+
+            chart1.ChartAreas[0].AxisX.ScrollBar.IsPositionedInside = true;
+            chart1.ChartAreas[0].AxisX.ScrollBar.Size = 15;
+            chart1.ChartAreas[0].AxisX.ScrollBar.ButtonStyle = ScrollBarButtonStyles.SmallScroll;
+            chart1.ChartAreas[0].AxisX.ScrollBar.BackColor = Color.Black;
+
+            chart1.Invalidate();
+        }
+        private void UpdateChart(object sender, EventArgs e)
+        {
+            if (currentIndex >= stockDataList.Count)
+            {
+                updateTimer.Stop(); // Stop when all data is displayed
+                return;
+            }
+
+            var data = stockDataList[currentIndex];
+            DateTime dateTime = DateTimeOffset.FromUnixTimeMilliseconds(data.t).DateTime;
+
+            currentPriceLine.Y = (double)data.c;
+
+            DataPoint dataPoint = new DataPoint();
+            dataPoint.XValue = dateTime.ToOADate();
+            dataPoint.YValues = new double[] { (double)data.h, (double)data.l, (double)data.o, (double)data.c };
+            chart1.Series[0].Points.Add(dataPoint);
+
+            // Adjust visible points based on the track bar value
+            int visiblePoints = Math.Max(1, trackBar1.Value); // Use the track bar value to set how many points are visible
+            if (chart1.Series[0].Points.Count > visiblePoints)
+            {
+               // chart1.ChartAreas[0].AxisX.ScaleView.Size = visiblePoints;
+            }
+            else
+            {
+               // chart1.ChartAreas[0].AxisX.ScaleView.Size = chart1.Series[0].Points.Count;
+            }
+
+            // Adjust Y-axis dynamically based on the visible points
+            var visibleDataPoints = chart1.Series[0].Points
+                .Skip(Math.Max(0, chart1.Series[0].Points.Count - visiblePoints))
+                .ToList();
+
+            double minY = visibleDataPoints.Min(p => p.YValues[1]); // Minimum of the "low" values in the visible range
+            double maxY = visibleDataPoints.Max(p => p.YValues[0]); // Maximum of the "high" values in the visible range
+
+            // Add a margin to the Y-axis for better visualization
+            double margin = (maxY - minY) * 0.1;
+            chart1.ChartAreas[0].AxisY.Minimum = minY - margin;
+            chart1.ChartAreas[0].AxisY.Maximum = maxY + margin;
+
+            if (hasActiveBuy)
+            {
+                double currentPrice = (double)data.c;
+                double profitLoss = (currentPrice - buyPrice) * leverage;
+                textBox1.Text = $"Profit/Loss: {profitLoss}";
+            }
+
+            currentIndex++;
+            chart1.Invalidate();
+
+            
 
 
+
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (updateTimer.Enabled)
+            {
+                updateTimer.Stop();
+                button1.Text = "Start";
+            }
+            else
+            {
+                updateTimer.Start();
+                button1.Text = "Pause";
+            }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            // Ensure the value is at least 1 to avoid setting an invalid zoom level
+            int zoomLevel = Math.Max(1, trackBar1.Value);
+
+            // Apply the zoom level to the X-axis
+            chart1.ChartAreas[0].AxisX.ScaleView.Size = zoomLevel;
+        }
+
+        private void Buy_button_Click(object sender, EventArgs e)
+        {
+            if (hasActiveBuy)
+            {
+                MessageBox.Show("You already have an active buy. Sell first before buying again.");
+                return;
+            }
+
+            // Set buy price to the current price
+            buyPrice = currentPriceLine.Y;
+            hasActiveBuy = true;
+
+            // Create an annotation line at the buy price
+            buyLine = new HorizontalLineAnnotation
+            {
+                AxisX = chart1.ChartAreas[0].AxisX,
+                AxisY = chart1.ChartAreas[0].AxisY,
+                IsInfinitive = true,
+                LineColor = Color.Green,
+                LineWidth = 2,
+                Y = buyPrice
+            };
+            chart1.Annotations.Add(buyLine);
+        }
+
+        private void Sell_button_Click(object sender, EventArgs e)
+        {
+            if (!hasActiveBuy)
+            {
+                MessageBox.Show("You need to buy before selling.");
+                return;
+            }
+
+            // Calculate profit or loss
+            double sellPrice = currentPriceLine.Y;
+            double profitLoss = (sellPrice - buyPrice) * leverage;
+
+            // Display profit or loss
+            MessageBox.Show($"Sell Price: {sellPrice}\nBuy Price: {buyPrice}\nProfit/Loss: {profitLoss}");
+
+            // Remove buy line and reset
+            chart1.Annotations.Remove(buyLine);
+            buyLine = null;
+            hasActiveBuy = false;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 
-      
 
-    }
+
+}
 

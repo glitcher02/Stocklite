@@ -14,7 +14,7 @@ namespace Stocklite1
     {
         private static readonly HttpClient client = new HttpClient();
         /// <summary>
-        /// The main entry point for the application.
+        /// The main starting point for the application.
         /// </summary>
         [STAThread]
         static async Task Main()
@@ -23,8 +23,8 @@ namespace Stocklite1
             Application.SetCompatibleTextRenderingDefault(false);
 
             //string appleapiUrl = "https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2024-07-01/2024-10-06?adjusted=true&sort=asc&apiKey=ea0K7Sr2HDr2rmNNq3rR2W9siLWxSoG5";
-            string appleapiUrl = "https://api.polygon.io/v2/aggs/ticker/C:EURUSD/range/1/day/2023-01-09/2024-10-10?adjusted=true&sort=asc&apiKey=IuP6zivLRuSGEb2N_nPt2XRde0pOH3_m";
-            //string appleapiUrl = "https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/minute/2024-10-09/2024-10-11?adjusted=true&sort=asc&apiKey=IuP6zivLRuSGEb2N_nPt2XRde0pOH3_m";
+            //string appleapiUrl = "https://api.polygon.io/v2/aggs/ticker/C:EURUSD/range/1/day/2023-01-09/2024-10-10?adjusted=true&sort=asc&apiKey=IuP6zivLRuSGEb2N_nPt2XRde0pOH3_m";
+            string appleapiUrl = "https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/2023-01-09/2024-11-20?adjusted=true&sort=asc&apiKey=IuP6zivLRuSGEb2N_nPt2XRde0pOH3_m";
 
 
 
